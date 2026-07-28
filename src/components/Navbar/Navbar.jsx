@@ -18,7 +18,7 @@ function Navbar() {
 
   return (
     <nav className={scrolled ? "navbar scrolled" : "navbar"}>
-      <div className="navbar-inner">
+      {/* <div className="navbar-inner"> */}
           <div className="logo">
             <span>Sazise.</span>
           </div>
@@ -55,7 +55,7 @@ function Navbar() {
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
           </button>
-      </div>
+      {/* </div> */}
     </nav>
   );
 }
