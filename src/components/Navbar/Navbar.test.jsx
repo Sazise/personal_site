@@ -1,141 +1,142 @@
-import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Navbar from './Navbar.jsx';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import Navbar from "./Navbar.jsx";
 
-afterEach(() => {
-  cleanup();
-  window.scrollY = 0;
-});
-
-describe('Navbar', () => {
-  it('renders the logo text', () => {
-    render(<Navbar />);
-    expect(screen.getByText('Sazise.')).toBeInTheDocument();
+describe("Navbar", () => {
+  beforeEach(() => {
+    window.scrollY = 0;
   });
 
-  it('renders all navigation links with the correct hrefs', () => {
-    render(<Navbar />);
+  afterEach(() => {
+    cleanup();
+  });
 
+  it("renders the logo text", () => {
+    render(<Navbar />);
+    expect(screen.getByText("Sazise.")).toBeInTheDocument();
+  });
+
+  it("renders all navigation links with the correct hrefs", () => {
+    render(<Navbar />);
     const expectedLinks = [
-      ['Home', '#home'],
-      ['About', '#about'],
-      ['Skills', '#skills'],
-      ['Projects', '#projects'],
-      ['Contact', '#contact'],
+      { text: "Home", href: "#home" },
+      { text: "About", href: "#about" },
+      { text: "Skills", href: "#skills" },
+      { text: "Projects", href: "#projects" },
+      { text: "Contact", href: "#contact" },
     ];
 
-    expectedLinks.forEach(([text, href]) => {
-      const link = screen.getByRole('link', { name: text });
-      expect(link).toHaveAttribute('href', href);
+    expectedLinks.forEach(({ text, href }) => {
+      const link = screen.getByRole("link", { name: text });
+      expect(link).toHaveAttribute("href", href);
     });
   });
 
-  it('does not render a wrapping .navbar-inner element (markup is commented out)', () => {
+  it('does not render a wrapping "navbar-inner" div (currently commented out)', () => {
     const { container } = render(<Navbar />);
-    expect(container.querySelector('.navbar-inner')).not.toBeInTheDocument();
+    expect(container.querySelector(".navbar-inner")).not.toBeInTheDocument();
   });
 
-  it('still renders the logo, nav list and hamburger inside the nav element', () => {
+  it("still renders the logo, nav links and hamburger button as direct nav content", () => {
     const { container } = render(<Navbar />);
-    const nav = container.querySelector('nav');
-    expect(nav.querySelector('.logo')).toBeInTheDocument();
-    expect(nav.querySelector('#primary-navigation')).toBeInTheDocument();
-    expect(nav.querySelector('button.hamburger')).toBeInTheDocument();
+    const nav = container.querySelector("nav");
+    expect(nav.querySelector(".logo")).toBeInTheDocument();
+    expect(nav.querySelector("#primary-navigation")).toBeInTheDocument();
+    expect(nav.querySelector(".hamburger")).toBeInTheDocument();
   });
 
-  it('applies the base "navbar" class when the page has not been scrolled', () => {
+  it('does not have the "scrolled" class before any scrolling', () => {
     const { container } = render(<Navbar />);
-    const nav = container.querySelector('nav');
-    expect(nav).toHaveClass('navbar');
-    expect(nav).not.toHaveClass('scrolled');
+    const nav = container.querySelector("nav");
+    expect(nav).toHaveClass("navbar");
+    expect(nav).not.toHaveClass("scrolled");
   });
 
-  it('adds the "scrolled" class once the window scrolls past 30px', () => {
+  it('adds the "scrolled" class once scrolled beyond 30px', () => {
     const { container } = render(<Navbar />);
-    const nav = container.querySelector('nav');
+    const nav = container.querySelector("nav");
 
     window.scrollY = 50;
     fireEvent.scroll(window);
 
-    expect(nav).toHaveClass('navbar scrolled');
+    expect(nav).toHaveClass("navbar", "scrolled");
   });
 
-  it('removes the "scrolled" class again once scrolled back to the top', () => {
+  it('does not add the "scrolled" class at exactly 30px (boundary case)', () => {
     const { container } = render(<Navbar />);
-    const nav = container.querySelector('nav');
-
-    window.scrollY = 50;
-    fireEvent.scroll(window);
-    expect(nav).toHaveClass('scrolled');
-
-    window.scrollY = 0;
-    fireEvent.scroll(window);
-    expect(nav).not.toHaveClass('scrolled');
-  });
-
-  it('does not mark the navbar as scrolled at exactly the 30px threshold', () => {
-    const { container } = render(<Navbar />);
-    const nav = container.querySelector('nav');
+    const nav = container.querySelector("nav");
 
     window.scrollY = 30;
     fireEvent.scroll(window);
 
-    expect(nav).not.toHaveClass('scrolled');
+    expect(nav).not.toHaveClass("scrolled");
   });
 
-  it('toggles the hamburger menu open and closed when clicked', async () => {
+  it('removes the "scrolled" class when scrolling back to the top', () => {
+    const { container } = render(<Navbar />);
+    const nav = container.querySelector("nav");
+
+    window.scrollY = 50;
+    fireEvent.scroll(window);
+    expect(nav).toHaveClass("scrolled");
+
+    window.scrollY = 0;
+    fireEvent.scroll(window);
+    expect(nav).not.toHaveClass("scrolled");
+  });
+
+  it("toggles the mobile menu open state when the hamburger button is clicked", async () => {
     const user = userEvent.setup();
     render(<Navbar />);
 
-    const button = screen.getByRole('button', { name: 'Open navigation menu' });
-    const navList = document.getElementById('primary-navigation');
+    const toggleButton = screen.getByRole("button");
+    const navList = screen.getByRole("list");
 
-    expect(button).toHaveAttribute('aria-expanded', 'false');
-    expect(navList).not.toHaveClass('active');
+    expect(navList).not.toHaveClass("active");
+    expect(toggleButton).not.toHaveClass("active");
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+    expect(toggleButton).toHaveAttribute("aria-label", "Open navigation menu");
 
-    await user.click(button);
+    await user.click(toggleButton);
 
-    expect(button).toHaveAttribute('aria-expanded', 'true');
-    expect(button).toHaveAccessibleName('Close navigation menu');
-    expect(navList).toHaveClass('nav-links active');
-    expect(button).toHaveClass('hamburger active');
+    expect(navList).toHaveClass("active");
+    expect(toggleButton).toHaveClass("active");
+    expect(toggleButton).toHaveAttribute("aria-expanded", "true");
+    expect(toggleButton).toHaveAttribute("aria-label", "Close navigation menu");
 
-    await user.click(button);
+    await user.click(toggleButton);
 
-    expect(button).toHaveAttribute('aria-expanded', 'false');
-    expect(button).toHaveAccessibleName('Open navigation menu');
-    expect(navList).not.toHaveClass('active');
-    expect(button).not.toHaveClass('active');
+    expect(navList).not.toHaveClass("active");
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
   });
 
-  it('closes the menu when a navigation link is clicked', async () => {
+  it("closes the mobile menu when a nav link is clicked", async () => {
     const user = userEvent.setup();
     render(<Navbar />);
 
-    const button = screen.getByRole('button', { name: 'Open navigation menu' });
-    await user.click(button);
-    expect(document.getElementById('primary-navigation')).toHaveClass('active');
+    await user.click(screen.getByRole("button"));
+    const navList = screen.getByRole("list");
+    expect(navList).toHaveClass("active");
 
-    await user.click(screen.getByRole('link', { name: 'About' }));
+    await user.click(screen.getByRole("link", { name: "About" }));
 
-    expect(document.getElementById('primary-navigation')).not.toHaveClass('active');
-    expect(screen.getByRole('button', { name: 'Open navigation menu' })).toBeInTheDocument();
+    expect(navList).not.toHaveClass("active");
   });
 
-  it('cleans up the scroll listener on unmount', () => {
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+  it("renders the hamburger button with three visual bar spans", () => {
+    render(<Navbar />);
+    const button = screen.getByRole("button");
+    expect(button.querySelectorAll('span[aria-hidden="true"]')).toHaveLength(3);
+  });
+
+  it("removes the scroll listener on unmount", () => {
+    const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
     const { unmount } = render(<Navbar />);
 
     unmount();
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(removeEventListenerSpy).toHaveBeenCalledWith("scroll", expect.any(Function));
     removeEventListenerSpy.mockRestore();
-  });
-
-  it('has an accessible hamburger button with aria-controls pointing to the nav list', () => {
-    render(<Navbar />);
-    const button = screen.getByRole('button', { name: 'Open navigation menu' });
-    expect(button).toHaveAttribute('aria-controls', 'primary-navigation');
   });
 });

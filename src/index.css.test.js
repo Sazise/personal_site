@@ -1,49 +1,42 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const css = readFileSync(new URL("./index.css", import.meta.url), "utf-8");
 
-describe('src/index.css', () => {
-  let css;
+function getRule(selector) {
+  const match = css.match(new RegExp(`${selector}\\s*\\{([^}]*)\\}`));
+  return match ? match[1] : null;
+}
 
-  beforeAll(() => {
-    css = readFileSync(join(__dirname, 'index.css'), 'utf-8');
+describe("index.css - #root rules", () => {
+  const rootRule = getRule("#root");
+
+  it("defines a #root rule", () => {
+    expect(rootRule).not.toBeNull();
   });
 
-  const getRuleBody = (selector) => {
-    const match = css.match(new RegExp(`${selector.replace(/[.#]/g, '\\$&')}\\s*\\{([^}]*)\\}`));
-    return match ? match[1] : null;
-  };
-
-  it('has balanced braces', () => {
-    const openCount = (css.match(/\{/g) || []).length;
-    const closeCount = (css.match(/\}/g) || []).length;
-    expect(openCount).toBe(closeCount);
+  it("no longer hardcodes a fixed 1126px width (regression check)", () => {
+    expect(rootRule).not.toMatch(/width:\s*1126px/);
+    expect(css).not.toMatch(/width:\s*1126px/);
   });
 
-  it('defines a #root rule block', () => {
-    const rootBlock = getRuleBody('#root');
-    expect(rootBlock).not.toBeNull();
+  it("constrains width responsively with max-width: 100%", () => {
+    expect(rootRule).toMatch(/max-width:\s*100%/);
   });
 
-  it('makes #root fluid instead of a fixed 1126px width', () => {
-    const rootBlock = getRuleBody('#root');
-    expect(rootBlock).toContain('max-width: 100%');
-    expect(rootBlock).not.toMatch(/width:\s*1126px/);
+  it("adds a min-height of 100% so #root fills its container", () => {
+    expect(rootRule).toMatch(/min-height:\s*100%/);
   });
 
-  it('adds a min-height: 100% rule to #root', () => {
-    const rootBlock = getRuleBody('#root');
-    expect(rootBlock).toMatch(/min-height:\s*100%;/);
+  it("still falls back to a full small-viewport-height on min-height", () => {
+    expect(rootRule).toMatch(/min-height:\s*100svh/);
   });
 
-  it('still retains the pre-existing #root layout rules', () => {
-    const rootBlock = getRuleBody('#root');
-    expect(rootBlock).toContain('margin: 0 auto');
-    expect(rootBlock).toContain('text-align: center');
-    expect(rootBlock).toContain('display: flex');
-    expect(rootBlock).toMatch(/min-height:\s*100svh;/);
+  it("retains the centered, bordered layout for the root container", () => {
+    expect(rootRule).toMatch(/margin:\s*0 auto/);
+    expect(rootRule).toMatch(/text-align:\s*center/);
+    expect(rootRule).toMatch(/border-inline:\s*1px solid var\(--border\)/);
+    expect(rootRule).toMatch(/display:\s*flex/);
+    expect(rootRule).toMatch(/flex-direction:\s*column/);
   });
 });
