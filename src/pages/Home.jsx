@@ -1,32 +1,30 @@
 import React from 'react';
 import '../styles/animations.css';
+import Navbar from "../components/Navbar/Navbar.jsx";
 
-const Home = () => {
-  return (
-    <section className="hero">
-    <div className="gradient one"></div>
-    <div className="gradient two"></div>
-    <div className="gradient three"></div>
+import Hero from "../sections/Hero.jsx";
+import About from "../sections/About.jsx";
+import Skills from "../sections/Skills.jsx";
+import Contact from "../sections/Contact.jsx";
+import Footer from "../sections/Footer.jsx";
 
-    <div className="hero-content">
-        <p>Hello, I'm</p>
+function Home(){
 
-        <h1>Sazise Nkomba</h1>
+    return(
+        <>
+            <Navbar/>
 
-        <h2>Software Developer</h2>
+            <main>
+                <Hero/>
+                <About/>
+                <Skills/>
+                <Contact/>
+            </main>
 
-        <p>
-            I build modern web applications, mobile apps and AI-powered
-            experiences.
-        </p>
-
-        <div className="buttons">
-            <button>Projects</button>
-            <button>Contact</button>
-        </div>
-    </div>
-</section>
-  )
+            <Footer/>
+        </>
+    )
 }
 
-export default Home
+
+export default Home;
