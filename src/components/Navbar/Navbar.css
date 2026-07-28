@@ -4,20 +4,30 @@
     box-sizing: border-box;
 }
 
-* {
-    outline: 1px solid red;
+html {
+    scroll-behavior: smooth;
 }
 
 .navbar {
     position: fixed;
     top: 0;
-    width: 100%;
+    left: 0;
+    right: 0;
     padding: 18px 8%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: .3s ease;
     z-index: 1000;
+}
+
+.navbar-inner {
+    width: min(1200px, 100%);
+    padding: 18px 2rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .navbar.scrolled {
@@ -38,12 +48,13 @@
     display:flex;
     gap:40px;
     list-style: none;
+    flex-shrink: 1;
 }
 
 .nav-links a{
     text-decoration: none;
     color: white;
-    font-size: 1rem;
+    font-size: clamp(0.75rem, 1.5vw, 1rem);
     position: relative;
     transition: color .3s ease;
 }
