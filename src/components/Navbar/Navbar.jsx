@@ -4,6 +4,7 @@ import "./Navbar.css";
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,21 +22,24 @@ function Navbar() {
         <span>Sazise.</span>
       </div>
 
-      <ul className={menuOpen ? "nav-links active" : "nav-links"}>
+      <ul
+      id="primary-navigation"
+        className={menuOpen ? "nav-links active" : "nav-links"}
+      >
         <li>
-          <a href="#home">Home</a>
+          <a href="#home" onClick={closeMenu}>Home</a>
         </li>
         <li>
-          <a href="#about">About</a>
+          <a href="#about" onClick={closeMenu}>About</a>
         </li>
         <li>
-          <a href="#skills">Skills</a>
+          <a href="#skills" onClick={closeMenu}>Skills</a>
         </li>
         <li>
-          <a href="#projects">Projects</a>
+          <a href="#projects" onClick={closeMenu}>Projects</a>
         </li>
         <li>
-          <a href="#contact">Contact</a>
+          <a href="#contact" onClick={closeMenu}>Contact</a>
         </li>
       </ul>
 
@@ -48,9 +52,9 @@ function Navbar() {
         aria-controls="primary-navigation"
       >
         {" "}
-        <span></span>
-        <span></span>
-        <span></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </button>
     </nav>
   );

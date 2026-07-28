@@ -68,17 +68,19 @@
 }
 
 .hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.hamburger span{
-    width: 28px;
-    height: 3px;
-    background: white;
-    transition: .3s;
+.hamburger:focus-visible {
+  outline: 2px solid #00bfff;
+  outline-offset: 4px;
 }
 
 .hamburger.active span:nth-child(1){
